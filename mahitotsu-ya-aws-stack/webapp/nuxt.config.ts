@@ -1,6 +1,6 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  ssr: true,
+  ssr: false,
 
   nitro: {
     preset: 'aws-lambda',
@@ -12,8 +12,4 @@ export default defineNuxtConfig({
       link: [{ rel: 'icon', type: 'image/png', href: 'data:image/png;base64,iVBORw0KGgo=' }]
     }
   },
-
-  modules: [
-    "@nuxt/content",
-  ],
 });

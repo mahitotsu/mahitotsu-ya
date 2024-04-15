@@ -76,7 +76,7 @@ export class MahitotsuYaAwsStack extends Stack {
                     cachePolicy: CachePolicy.CACHING_DISABLED,
                     allowedMethods: AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
                 },
-                '/api/_content/cache.*.json': {
+                '/_content/*': {
                     origin: new S3Origin(webappStatic, { originPath: '/public' }),
                     cachePolicy: CachePolicy.CACHING_DISABLED,
                     allowedMethods: AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
@@ -100,7 +100,7 @@ export class MahitotsuYaAwsStack extends Stack {
             actions: ['s3:GetObject'],
             resources: [
                 webappStatic.arnForObjects('public/_nuxt/*'),
-                webappStatic.arnForObjects('public/api/_content/*'),
+                webappStatic.arnForObjects('public/_content/*'),
             ],
             conditions: {
                 'StringEquals': {
