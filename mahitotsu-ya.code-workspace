@@ -3,5 +3,11 @@
         {
             "path": "."
         },
+        {
+            "path": "./mahitotsu-ya-frontend
+        },
+        {
+            "path": "./mahitotsu-ya-backend
+        },
     ]
 }
