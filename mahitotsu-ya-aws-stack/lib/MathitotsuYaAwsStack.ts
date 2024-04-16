@@ -2,8 +2,8 @@ import { CfnOutput, DockerImage, RemovalPolicy, ScopedAws, Stack, StackProps } f
 import { AllowedMethods, CachePolicy, CfnDistribution, CfnOriginAccessControl, Distribution } from "aws-cdk-lib/aws-cloudfront";
 import { FunctionUrlOrigin, S3Origin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { Effect, PolicyStatement, ServicePrincipal } from "aws-cdk-lib/aws-iam";
-import { FunctionUrlAuthType, InvokeMode, Runtime } from "aws-cdk-lib/aws-lambda";
-import { NodejsFunction, OutputFormat } from "aws-cdk-lib/aws-lambda-nodejs";
+import { FunctionUrlAuthType, InvokeMode, Runtime, Tracing } from "aws-cdk-lib/aws-lambda";
+import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { BlockPublicAccess, Bucket } from "aws-cdk-lib/aws-s3";
 import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
 import { Construct } from "constructs";
@@ -45,10 +45,12 @@ export class MahitotsuYaAwsStack extends Stack {
         const webappServer = new NodejsFunction(this, 'WebappServer', {
             entry: `${__dirname}/../webapp/.output/server/index.mjs`,
             runtime: Runtime.NODEJS_20_X,
-            memorySize: 128,
-            bundling: {
-                format: OutputFormat.ESM,
-            }
+            memorySize: 256,
+            environment: {
+                CONTENT_BUCKET_NAME: webappStatic.bucketName,
+                CONTENT_OBJECT_PREFIX: 'public/_content/',
+            },
+            tracing: Tracing.ACTIVE,
         });
         webappServer.node.addDependency(webappStaticDeployment);
         const webappServerUrl = webappServer.addFunctionUrl({
@@ -76,11 +78,6 @@ export class MahitotsuYaAwsStack extends Stack {
                     cachePolicy: CachePolicy.CACHING_DISABLED,
                     allowedMethods: AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
                 },
-                '/_content/*': {
-                    origin: new S3Origin(webappStatic, { originPath: '/public' }),
-                    cachePolicy: CachePolicy.CACHING_DISABLED,
-                    allowedMethods: AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
-                },
             },
         });
         const cfnWebappDistribution = webappDistribution.node.defaultChild as CfnDistribution;
@@ -100,7 +97,6 @@ export class MahitotsuYaAwsStack extends Stack {
             actions: ['s3:GetObject'],
             resources: [
                 webappStatic.arnForObjects('public/_nuxt/*'),
-                webappStatic.arnForObjects('public/_content/*'),
             ],
             conditions: {
                 'StringEquals': {
@@ -108,6 +104,7 @@ export class MahitotsuYaAwsStack extends Stack {
                 }
             }
         }));
+        webappStatic.grantRead(webappServer, 'public/_content/*');
 
         new CfnOutput(this, 'WebappEndpointUrl', { value: `https://${webappDistribution.domainName}` });
     }
