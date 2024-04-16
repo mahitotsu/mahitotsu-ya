@@ -3,8 +3,5 @@
         {
             "path": "."
         },
-        {
-            "path": "mahitotsu-ya-aws-stack"
-        }
     ]
 }

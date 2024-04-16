@@ -1,3 +1,0 @@
-<template>
-    <MarkdownDoc></MarkdownDoc>
-</template>
