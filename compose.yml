@@ -1,0 +1,30 @@
+services:
+  # ----- builders
+  nuxtbuilder:
+    image: public.ecr.aws/docker/library/node:20-bullseye-slim
+    working_dir: /workdir
+    user: 1000:1000
+    volumes:
+      - ./mahitotsu-ya-website/:/workdir:rw
+    entrypoint: ['npm']
+    command: ['run','build']
+  # ----- runtimes
+  website:
+    image: public.ecr.aws/docker/library/node:20-bullseye-slim
+    working_dir: /workdir
+    volumes:
+      - ./mahitotsu-ya-website/.output/server:/workdir:ro
+    ports:
+      - 3000:3000
+    entrypoint: ['node']
+    command: ['index.mjs']
+    depends_on:
+      nuxtbuilder:
+        condition: service_completed_successfully
+  webcontents:
+    image: public.ecr.aws/docker/library/nginx:stable
+    volumes:
+      - ./mahitotsu-ya-website/.output/public:/usr/share/nginx/html:ro
+    depends_on:
+      nuxtbuilder:
+        condition: service_completed_successfully
