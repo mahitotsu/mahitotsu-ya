@@ -1,18 +1,15 @@
 import fs from 'fs';
-import mime from 'mime';
+import markdown from 'markdown-it';
 
+const m = markdown();
 export default defineEventHandler((event) => {
 
-    const f = `./public${event.path}`;
+    const f = `./public${event.path}.md`;
     if (!fs.existsSync(f)) {
         throw createError({
             statusCode: 404,
         });
     }
 
-    const mimeType = mime.getType(f);
-    if (mimeType) {
-        event.node.res.setHeader('Content-Type', mimeType);
-    }
-    return sendStream(event, fs.createReadStream(f));
+    return fs.promises.readFile(f).then(text => m.render(text.toString())).then(html => send(event, html, 'text/html'));
 })
