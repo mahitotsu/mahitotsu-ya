@@ -1,3 +1,3 @@
 <template>
-    <p>This is our history.</p>
+    <MarkdownDoc path="/about/history"></MarkdownDoc>
 </template>
