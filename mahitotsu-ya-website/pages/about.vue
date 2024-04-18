@@ -11,7 +11,7 @@ const links = [
         <div class="flex-none w-48">
             <UVerticalNavigation :links="links"></UVerticalNavigation>
         </div>
-        <div class="flex-1 w-full">
+        <div class="flex-1 w-full pl-4">
             <NuxtPage></NuxtPage>
         </div>
     </div>

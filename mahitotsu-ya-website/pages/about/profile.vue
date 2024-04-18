@@ -1,3 +1,3 @@
 <template>
-    <p>This is a profile.</p>
+    <MarkdownDoc path="/about/profile"></MarkdownDoc>
 </template>

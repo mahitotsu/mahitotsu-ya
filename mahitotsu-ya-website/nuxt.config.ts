@@ -3,6 +3,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   ssr: true,
+
   nitro: {
     preset: 'node-cluster',
     serveStatic: false,
@@ -20,6 +21,7 @@ export default defineNuxtConfig({
       ]
     }
   },
+
   runtimeConfig: {
     webcontentsBaseUrl: '',
   },
