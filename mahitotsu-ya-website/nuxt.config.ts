@@ -11,7 +11,7 @@ export default defineNuxtConfig({
     componentIslands: true,
   },
 
-  modules: ["nuxt-security"],
+  modules: ["nuxt-security", "@nuxt/ui"],
 
   app: {
     head: {
@@ -19,5 +19,12 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/vnd.microsoft.icon', href: 'data:image/x-icon;base64,AA' }
       ]
     }
-  }
+  },
+  runtimeConfig: {
+    webcontentsBaseUrl: '',
+  },
+
+  security: {
+
+  },
 })

@@ -12,6 +12,9 @@ services:
   website:
     image: public.ecr.aws/docker/library/node:20-bullseye-slim
     working_dir: /workdir
+    init: true
+    environment:
+      - NUXT_WEBCONTENTS_BASE_URL=http://webcontents:80
     volumes:
       - ./mahitotsu-ya-website/.output/server:/workdir:ro
     ports:
