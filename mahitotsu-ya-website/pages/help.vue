@@ -1,8 +1,7 @@
 <script setup>
 const links = [
-    { label: '社長ご挨拶', to: '/about/greeting',  icon: 'i-heroicons-chat-bubble-oval-left-ellipsis', },
-    { label: '会社概要', to: '/about/profile',  icon: 'i-heroicons-user', },
-    { label: '沿革・歴史', to: '/about/history', icon: 'i-heroicons-book-open', },
+    { label: 'お問い合わせ先', to: '/help/contact',  icon: 'i-heroicons-phone', },
+    { label: 'よくある質問', to: '/help/faq',  icon: 'i-heroicons-chat-bubble-left-right', },
 ];
 </script>
 

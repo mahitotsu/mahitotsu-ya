@@ -4,19 +4,17 @@ const props = defineProps<{
     path: string;
 }>();
 const md = markdownIt();
-const { data: html } = await useAsyncData(() =>
+const { data: html, pending } = await useAsyncData(() =>
     fetchWebContent(['/contents', props.path, '.md'].join(''))
-        .then(stream => new Promise<string>((resolve, reject) => {
-            const chunks = [] as Buffer[];
-            stream.on('data', (data) => chunks.push(Buffer.from(data)));
-            stream.on('error', (err) => reject(err));
-            stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
-        }))
-        .then(src => md.render(src)));
+        .then(stream => streamToString(stream))
+        .then(src => md.render(src ? src : '')), {
+    lazy: true,
+});
 </script>
 
 <template>
-    <span v-html="html"></span>
+    <span v-if="pending">Loading ...</span>
+    <span v-else v-html="html"></span>
 </template>
 
 <style scoped>
@@ -24,8 +22,20 @@ const { data: html } = await useAsyncData(() =>
     @apply pb-8 text-xl
 }
 
+::v-deep(h2) {
+    @apply py-4 text-lg
+}
+
+::v-deep(h3) {
+    @apply py-4 text-base font-bold
+}
+
 ::v-deep(p) {
     @apply pb-4
+}
+
+::v-deep(ol) {
+    @apply list-decimal
 }
 
 ::v-deep(table) {
