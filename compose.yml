@@ -13,21 +13,12 @@ services:
     image: public.ecr.aws/docker/library/node:20-bullseye-slim
     working_dir: /workdir
     init: true
-    environment:
-      - NUXT_WEBCONTENTS_BASE_URL=http://webcontents:80
     volumes:
-      - ./mahitotsu-ya-website/.output/server:/workdir:ro
+      - ./mahitotsu-ya-website/.output:/workdir:ro
     ports:
       - 3000:3000
     entrypoint: ['node']
-    command: ['index.mjs']
-    depends_on:
-      nuxtbuilder:
-        condition: service_completed_successfully
-  webcontents:
-    image: public.ecr.aws/docker/library/nginx:stable
-    volumes:
-      - ./mahitotsu-ya-website/.output/public:/usr/share/nginx/html:ro
+    command: ['./server/index.mjs']
     depends_on:
       nuxtbuilder:
         condition: service_completed_successfully

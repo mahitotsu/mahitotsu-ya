@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const links = [
     { label: 'Home', to: '/', icon: 'i-heroicons-building-storefront', },
-    { label: 'About', to: '/about/greeting', icon: 'i-heroicons-question-mark-circle', },
+    { label: 'About', to: '/about', icon: 'i-heroicons-question-mark-circle', },
 ];
 </script>
 

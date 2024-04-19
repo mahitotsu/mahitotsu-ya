@@ -22,10 +22,6 @@ export default defineNuxtConfig({
     }
   },
 
-  runtimeConfig: {
-    webcontentsBaseUrl: '',
-  },
-
   security: {
 
   },
