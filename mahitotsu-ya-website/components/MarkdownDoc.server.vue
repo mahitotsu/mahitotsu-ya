@@ -4,7 +4,7 @@ const props = defineProps<{
     path: string;
 }>();
 const md = markdownIt();
-const { data: html, pending } = await useAsyncData(() =>
+const { data: html, pending } = useAsyncData(() =>
     fetchWebContent(['/contents', props.path, '.md'].join(''))
         .then(stream => streamToString(stream))
         .then(src => md.render(src ? src : '')), {
@@ -23,11 +23,15 @@ const { data: html, pending } = await useAsyncData(() =>
 }
 
 ::v-deep(h2) {
-    @apply py-4 text-lg
+    @apply pb-3 pt-6 text-xl
 }
 
 ::v-deep(h3) {
-    @apply py-4 text-base font-bold
+    @apply pb-1 pt-3 text-lg font-bold
+}
+
+::v-deep(h4) {
+    @apply pb-1 pt-2 text-base font-bold
 }
 
 ::v-deep(p) {
@@ -39,7 +43,7 @@ const { data: html, pending } = await useAsyncData(() =>
 }
 
 ::v-deep(table) {
-    @apply table-auto
+    @apply table-auto py-1
 }
 
 ::v-deep(table td) {
