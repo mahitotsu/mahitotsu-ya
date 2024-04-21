@@ -10,27 +10,43 @@ const { data: categories } = await useFetch('/api/list-categories', {
 });
 
 const selectedCategory = ref();
-const onChangeCategory = (index: number) => {
+const selectCategory = (index: number) => {
     selectedCategory.value = (categories.value ? categories.value[index].label : undefined);
 }
-onChangeCategory(0);
+selectCategory(0);
 
 const { data: products } = await useFetch('/api/list-products', {
     query: { category: selectedCategory },
+    transform: (products) => products.map(product => {
+        return {
+            ...product,
+            badges: (() => {
+                const items = [];
+                if (product.storeOnly.toString() == 'true') items.push('店舗限定');
+                if (product.limitedTime.toString() == 'true') items.push('期間限定');
+                return items;
+            })()
+        }
+    })
 });
 </script>
 
 <template>
     <MarkdownDoc path="/products"></MarkdownDoc>
-    <UTabs :items="categories" :defaultIndex="0" @change="onChangeCategory" class="w-full">
+    <UTabs :items="categories" :defaultIndex="0" @change="selectCategory" class="w-full">
         <template #item="{ item }">
             <p class="pt-4 pb-4">{{ item.description }}</p>
             <div class="flex flex-wrap gap-4 place-items-stretch">
                 <UCard v-for="product in products" class="w-56">
                     <template #header>
-                        <div>{{ product.name }}</div>
+                        <div class="h-12">
+                            <div class="font-bold pb-2">{{ product.name }}</div>
+                            <div v-if="product.badges" class="text-sm">
+                                <span class="mr-2 bg-lime-200" v-for="badge in product.badges">{{ badge }}</span>
+                            </div>
+                        </div>
                     </template>
-                    <div class="h-48">{{ product.description }}</div>
+                    <div>{{ product.description }}</div>
                     <template #footer>
                         <div>価格: {{ product.price }} 円</div>
                     </template>

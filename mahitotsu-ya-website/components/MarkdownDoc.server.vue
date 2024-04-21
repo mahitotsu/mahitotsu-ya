@@ -30,6 +30,10 @@ const { data: html, pending } = useAsyncData(() =>
     @apply pb-1 pt-3 text-lg font-bold
 }
 
+::v-deep(h6) {
+    @apply pb-1 pt-1 text-sm 
+}
+
 ::v-deep(h4) {
     @apply pb-1 pt-2 text-base font-bold
 }
