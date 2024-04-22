@@ -59,7 +59,7 @@ const onError = async (event: FormErrorEvent) => {
                     <UButton type="submit" size="md">お買い物かご に追加</UButton>
                     <div class="mt-4">
                         <div>内容量: {{ gift.quantity }}</div>
-                        <div>価格: {{ gift.price }}</div>
+                        <div>価格: {{ gift.price }} 円</div>
                     </div>
                 </UForm>
             </div>
