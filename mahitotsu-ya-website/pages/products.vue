@@ -8,12 +8,8 @@ const { data: categories } = await useFetch('/api/list-categories', {
         };
     }),
 });
-
-const selectedCategory = ref();
-const selectCategory = (index: number) => {
-    selectedCategory.value = (categories.value ? categories.value[index].label : undefined);
-}
-selectCategory(0);
+const selectedIndex = useState<number>('SelectedCategoryIndex', () => 0);
+const selectedCategory = computed(() => categories.value ? categories.value[selectedIndex.value].label : undefined);
 
 const { data: products } = await useFetch('/api/list-products', {
     query: { category: selectedCategory },
@@ -29,11 +25,15 @@ const { data: products } = await useFetch('/api/list-products', {
         }
     })
 });
+
+const selectCategory = (index: number) => {
+    selectedIndex.value = index;
+}
 </script>
 
 <template>
     <MarkdownDoc path="/products"></MarkdownDoc>
-    <UTabs :items="categories" :defaultIndex="0" @change="selectCategory" class="w-full">
+    <UTabs :items="categories" v-model="selectedIndex" @change="selectCategory" class="w-full">
         <template #item="{ item }">
             <p class="pt-4 pb-4">{{ item.description }}</p>
             <div class="flex flex-wrap gap-4 place-items-stretch">

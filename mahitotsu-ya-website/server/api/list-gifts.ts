@@ -3,6 +3,7 @@ import { fetchWebContent } from "~/utils/fetchWebContent";
 import { streamToString } from "~/utils/streamToString";
 
 interface Gift {
+    id: string,
     name: string;
     quantity: string;
     price: number;
