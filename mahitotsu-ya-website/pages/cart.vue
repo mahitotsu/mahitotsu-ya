@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import ErrorMessageModal from '~/components/ErrorMessageModal.vue';
+
+const modal = useModal();
 const sessionId = useState<number>('SessionId', () => Date.now());
+
 const { data: gifts } = await useFetch('/api/list-gifts', {
     transform: (gifts) => {
         const giftMap = {} as {
@@ -42,12 +46,18 @@ const formState = computed(() => {
         grandTotal: items.value ? items.value.reduce((gt, item) => gt + item.total, 0) : 0,
     }
 });
-const removeItem = async (id: string) => {
+const hasItems = computed(() => items.value && items.value.length > 0);
+const removeItem = async (id?: string) => {
     await $fetch('/api/remove-items-from-cart', {
         method: 'POST',
         body: { sessionId: sessionId.value, id },
     }).then(changed => {
         if (changed) refresh();
+    });
+}
+const buyItems = async () => {
+    modal.open(ErrorMessageModal, {
+        messages: ['現在、システム障害によりお会計が出来ません。復旧までお待ちいただくようよろしくお願いいたします。'],
     });
 }
 </script>
@@ -72,8 +82,11 @@ const removeItem = async (id: string) => {
         <UForm :state="formState" class="space-y-4">
             <div class="text-xl">総計: <span class="font-bold">{{ formState.grandTotal }}</span> 円</div>
             <div class="flex flex-rows gap-4">
-                <UButton type="submit" size="md" icon="i-heroicons-currency-yen">商品を購入する</UButton>
-                <UButton type="submit" size="md" variant="outline" icon="i-heroicons-x-mark">買い物かごを空にする</UButton>
+                <UButton type="submit" size="md" icon="i-heroicons-currency-yen" @click="buyItems()"
+                    :disabled="!hasItems">
+                    商品を購入する</UButton>
+                <UButton type="button" size="md" variant="outline" icon="i-heroicons-x-mark" @click="removeItem()"
+                    :disabled="!hasItems">買い物かごを空にする</UButton>
             </div>
         </UForm>
     </div>

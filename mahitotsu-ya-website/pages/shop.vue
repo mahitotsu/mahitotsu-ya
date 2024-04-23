@@ -2,6 +2,7 @@
 import type { FormErrorEvent, FormSubmitEvent } from '#ui/types';
 import { z } from 'zod';
 import ErrorMessageModal from '~/components/ErrorMessageModal.vue';
+import InfoMessageModal from '~/components/InfoMessageModal.vue';
 import type { CartItem } from '~/utils/devStorage';
 
 const modal = useModal();
@@ -27,10 +28,23 @@ gifts.value?.forEach(gift => {
 
 const onSubmit = async (event: FormSubmitEvent<Schema>) => {
     const item = { ...event.data } as CartItem;
-    await $fetch('/api/add-items-to-cart', {
-        method: 'POST',
-        body: { sessionId: sessionId.value, item },
+    const hasStock = await $fetch('/api/inquire-gift-inventry', {
+        query: { giftId: item.giftId },
     });
+    if (!hasStock) {
+        modal.open(ErrorMessageModal, {
+            messages: ['申し訳ございません。現在この商品は品切れとなっております。'],
+        })
+    } else {
+        await $fetch('/api/add-items-to-cart', {
+            method: 'POST',
+            body: { sessionId: sessionId.value, item },
+        }).then((changed) => {
+            if (changed) modal.open(InfoMessageModal, {
+                messages: ['お買い物籠に商品を追加しました。']
+            })
+        });
+    }
 }
 
 const onError = async (event: FormErrorEvent) => {
