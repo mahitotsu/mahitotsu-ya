@@ -64,7 +64,10 @@ const onError = async (event: FormErrorEvent) => {
                 <div class="font-bold">{{ gift.name }}</div>
             </template>
             <div class="grid grid-cols-3 gap-4">
-                <div class="col-span-2">{{ gift.description }}</div>
+                <div class="col-span-2">
+                    <img src="/images/golden-yokan.jpg" class="w-24 h-24" />
+                    <div>{{ gift.description }}</div>
+                </div>
                 <UForm class="col-span-1 space-y-4" :schema="schema" :state="models[gift.id]" @submit="onSubmit"
                     @error="onError">
                     <UFormGroup label="購入個数">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ErrorMessageModal from '~/components/ErrorMessageModal.vue';
+import InfoMessageModal from '~/components/InfoMessageModal.vue';
 
 const modal = useModal();
 const sessionId = useState<number>('SessionId', () => Date.now());
@@ -56,16 +56,20 @@ const removeItem = async (id?: string) => {
     });
 }
 const buyItems = async () => {
-    modal.open(ErrorMessageModal, {
-        messages: ['現在、システム障害によりお会計が出来ません。復旧までお待ちいただくようよろしくお願いいたします。'],
-    });
+    await $fetch('/api/order-cart-items', {
+        method: 'POST',
+    }).then(orderId => {
+        modal.open(InfoMessageModal, {
+            messages: ['お買い上げありがとうございます。ご注文番号をお控えください。', `注文番号: ${orderId}`]
+        });
+    }).then(() => removeItem());
 }
 </script>
 
 <template>
     <h1 class="mb-4">お買い物かご</h1>
-    <div class="grid grid-cols-3 space-x-8">
-        <UTable :rows="items ? items : []" :columns="colmuns" class="col-span-2">
+    <div class="grid grid-cols-7 space-x-8">
+        <UTable :rows="items ? items : []" :columns="colmuns" class="col-span-4">
             <template #price-data="{ row }">
                 <div class="text-right">{{ row.price }} 円</div>
             </template>

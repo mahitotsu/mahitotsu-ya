@@ -5,7 +5,7 @@ export default defineNuxtConfig({
   ssr: true,
 
   nitro: {
-    preset: 'node-cluster',
+    preset: 'node-server',
     serveStatic: false,
   },
   experimental: {

@@ -6,7 +6,7 @@ const links = [[
     { label: '企業情報', to: '/about', icon: 'i-heroicons-information-circle', },
 ], [
     { label: 'オンラインショップ', to: '/shop', icon: 'i-heroicons-building-storefront', },
-    { label: 'お買い物かご', to: '/cart', icon: 'i-heroicons-shopping-cart' },
+    { label: 'ご注文', to: '/order', icon: 'i-heroicons-wallet' },
 ]];
 </script>
 
