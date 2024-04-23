@@ -6,5 +6,8 @@
         {
             "path": "./mahitotsu-ya-website"
         },
+        {
+            "path": "./mahitotsu-ya-awsstack"
+        },
     ]
 }
