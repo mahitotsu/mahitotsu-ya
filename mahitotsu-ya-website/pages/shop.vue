@@ -13,14 +13,14 @@ const models = {} as {
 }
 
 const schema = z.object({
-    id: z.string(),
+    giftId: z.string(),
     count: z.number().min(1, 'ご注文は最低1つから承っております。').max(10, 'ご注文は商品一つにつき最高10個までとさせていただいております。'),
 });
 type Schema = z.output<typeof schema>;
 
 gifts.value?.forEach(gift => {
     models[gift.id] = reactive({
-        id: gift.id,
+        giftId: gift.id,
         count: 1,
     });
 });

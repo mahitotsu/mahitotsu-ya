@@ -2,16 +2,15 @@ import { CartItem, devStorage } from "~/utils/devStorage";
 
 interface RequestParams {
     sessionId: string;
-    item: CartItem;
+    id: string;
 }
 
 export default defineEventHandler(async event => {
-    const {sessionId, item} = await readBody<RequestParams>(event);
+    const { sessionId, id } = await readBody<RequestParams>(event);
     let items = devStorage.get<CartItem[]>(sessionId);
     if (items == undefined) {
-        items = [];
+        return false;
     }
-    items.push(item);
-    devStorage.set(sessionId, items);
+    devStorage.set(sessionId, items.filter(item => item.id != id));
     return true;
 })

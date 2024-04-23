@@ -17,15 +17,15 @@ const { data: gifts } = await useFetch('/api/list-gifts', {
         return giftMap;
     }
 });
-const { data: items } = await useFetch('/api/list-items-in-cart', {
+const { data: items, refresh } = await useFetch('/api/list-items-in-cart', {
     query: { sessionId: sessionId.value },
     transform: (items) => items.map(item => {
         return {
             id: item.id,
             count: item.count,
-            name: gifts.value![item.id].name,
-            price: gifts.value![item.id].price,
-            total: gifts.value![item.id].price * item.count,
+            name: gifts.value![item.giftId].name,
+            price: gifts.value![item.giftId].price,
+            total: gifts.value![item.giftId].price * item.count,
         }
     }),
 });
@@ -42,6 +42,14 @@ const formState = computed(() => {
         grandTotal: items.value ? items.value.reduce((gt, item) => gt + item.total, 0) : 0,
     }
 });
+const removeItem = async (id: string) => {
+    await $fetch('/api/remove-items-from-cart', {
+        method: 'POST',
+        body: { sessionId: sessionId.value, id },
+    }).then(changed => {
+        if (changed) refresh();
+    });
+}
 </script>
 
 <template>
@@ -57,7 +65,9 @@ const formState = computed(() => {
             <template #total-data="{ row }">
                 <div class="text-right">{{ row.total }} 円</div>
             </template>
-            <template #delete-data="{ row, index }"><UButton variant="outline">x</UButton></template>
+            <template #delete-data="{ row }">
+                <UButton variant="outline" @click="removeItem(row.id)">x</UButton>
+            </template>
         </UTable>
         <UForm :state="formState" class="space-y-4">
             <div class="text-xl">総計: <span class="font-bold">{{ formState.grandTotal }}</span> 円</div>
