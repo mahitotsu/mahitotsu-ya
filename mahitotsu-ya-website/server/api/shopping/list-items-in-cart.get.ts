@@ -17,5 +17,5 @@ export default defineEventHandler(async event => {
         TableName: sessionTableName,
         Key: { id: sessionId, type },
     });
-    return await docClient.send(getCommand).then(result => result.Item ? Object.values((result.Item as Cart).items) : []);
+    return await docClient.send(getCommand).then(result => result.Item ? Object.values((result.Item as Cart).goods) : []);
 })

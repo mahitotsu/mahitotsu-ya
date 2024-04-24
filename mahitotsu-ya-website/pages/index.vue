@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const sessionId = useState('SessionId');
+const sessionId = useConversationId();
 const model = reactive<{
     question?: string;
     answer?: string;

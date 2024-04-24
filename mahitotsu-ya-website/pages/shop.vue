@@ -6,9 +6,11 @@ import InfoMessageModal from '~/components/InfoMessageModal.vue';
 import type { CartItem } from '~/utils/sessionTableTypes';
 
 const modal = useModal();
-const sessionId = useState<number>('SessionId', () => Date.now());
+const sessionId = useConversationId();
 
-const { data: gifts } = await useFetch('/api/product/list-gifts');
+const { data: gifts } = await useFetch('/api/product/list-gifts', {
+    lazy: true,
+});
 const models = {} as {
     [key: string]: Record<string, any>,
 }

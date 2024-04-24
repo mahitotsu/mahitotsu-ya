@@ -12,6 +12,7 @@ const selectedIndex = useState<number>('SelectedCategoryIndex', () => 0);
 const selectedCategory = computed(() => categories.value ? categories.value[selectedIndex.value].label : undefined);
 
 const { data: products } = await useFetch('/api/product/list-products', {
+    lazy: true,
     query: { category: selectedCategory },
     transform: (products) => products.map(product => {
         return {

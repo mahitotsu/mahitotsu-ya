@@ -3,7 +3,9 @@ const props = defineProps<{
     path: string;
 }>();
 const { data: html } = useAsyncData(() =>
-    $fetch(['/contents', props.path, '.md'].join('')), );
+    $fetch(['/contents', props.path, '.md'].join('')), {
+        lazy: true,
+    });
 </script>
 
 <template>

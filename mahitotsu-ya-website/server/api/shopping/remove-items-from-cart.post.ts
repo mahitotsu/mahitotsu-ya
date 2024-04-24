@@ -17,7 +17,7 @@ export default defineEventHandler(async event => {
         const removeCommand = new UpdateCommand({
             TableName: sessionTableName,
             Key: { id: sessionId, type },
-            UpdateExpression: 'REMOVE items.#itemKey',
+            UpdateExpression: 'REMOVE goods.#itemKey',
             ExpressionAttributeNames: {
                 '#itemKey': key,
             }
@@ -27,7 +27,7 @@ export default defineEventHandler(async event => {
         const updateCommand = new UpdateCommand({
             TableName: sessionTableName,
             Key: { id: sessionId, type },
-            UpdateExpression: 'SET items = :empptyMap',
+            UpdateExpression: 'SET goods = :emptyMap',
             ExpressionAttributeValues: {
                 ':emptyMap': {}
             }

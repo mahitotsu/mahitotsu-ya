@@ -19,10 +19,11 @@ export default defineEventHandler(async event => {
         Key: { id: sessionId, type },
     });
     let cart = (await docClient.send(getCommand)).Item as Cart;
+    const key = `CIK-${Date.now().toString()}`;
 
     if (!cart) {
-        cart = { id: sessionId, type, items: {} };
-        cart.items[Date.now().toString()] = item;
+        cart = { id: sessionId, type, goods: {} };
+        cart.goods[key] = { ...item, key };
         const insertCommand = new PutCommand({
             TableName: sessionTableName,
             Item: cart,
@@ -32,12 +33,12 @@ export default defineEventHandler(async event => {
         const updateCommand = new UpdateCommand({
             TableName: sessionTableName,
             Key: { id: sessionId, type },
-            UpdateExpression: 'SET items.#itemKey = :item',
+            UpdateExpression: 'SET goods.#itemKey = :item',
             ExpressionAttributeNames: {
-                '#itemKey': Date.now().toString(),
+                '#itemKey': key
             },
             ExpressionAttributeValues: {
-                ':item': item,
+                ':item': { ...item, key },
             }
         });
         return await docClient.send(updateCommand).then(result => true);

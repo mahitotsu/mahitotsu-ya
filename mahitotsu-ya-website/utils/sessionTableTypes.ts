@@ -1,7 +1,7 @@
 export interface Cart {
     id: string;
     readonly type: 'Cart';
-    items: { [key: string]: CartItem };
+    goods: { [key: string]: CartItem };
 }
 
 export interface CartItem {

@@ -2,9 +2,10 @@
 import InfoMessageModal from '~/components/InfoMessageModal.vue';
 
 const modal = useModal();
-const sessionId = useState<number>('SessionId', () => Date.now());
+const sessionId = useConversationId();
 
 const { data: gifts } = await useFetch('/api/product/list-gifts', {
+    lazy: true,
     transform: (gifts) => {
         const giftMap = {} as {
             [key: string]: {
@@ -21,9 +22,10 @@ const { data: gifts } = await useFetch('/api/product/list-gifts', {
         return giftMap;
     }
 });
-const { data: items, refresh } = await useFetch('/api/shopping/list-items-in-cart', {
+const { data: goods, refresh } = await useFetch('/api/shopping/list-items-in-cart', {
+    lazy: true,
     query: { sessionId: sessionId.value },
-    transform: (items) => items.map(item => {
+    transform: (goods) => goods.map(item => {
         return {
             key: item.key,
             count: item.count,
@@ -43,10 +45,10 @@ const colmuns = [
 const formState = computed(() => {
     return {
         sessionId: sessionId.value,
-        grandTotal: items.value ? items.value.reduce((gt, item) => gt + item.total, 0) : 0,
+        grandTotal: goods.value ? goods.value.reduce((gt, item) => gt + item.total, 0) : 0,
     }
 });
-const hasItems = computed(() => items.value && items.value.length > 0);
+const hasItems = computed(() => goods.value && goods.value.length > 0);
 const removeItem = async (key?: string) => {
     await $fetch('/api/shopping/remove-items-from-cart', {
         method: 'POST',
@@ -58,18 +60,19 @@ const removeItem = async (key?: string) => {
 const buyItems = async () => {
     await $fetch('/api/order/order-cart-items', {
         method: 'POST',
+        body: { sessionId: sessionId.value },
     }).then(orderId => {
         modal.open(InfoMessageModal, {
             messages: ['お買い上げありがとうございます。ご注文番号をお控えください。', `注文番号: ${orderId}`]
         });
-    }).then(() => removeItem());
+    }).then(() => refresh());
 }
 </script>
 
 <template>
     <h1 class="mb-4">お買い物かご</h1>
     <div class="grid grid-cols-7 space-x-8">
-        <UTable :rows="items ? items : []" :columns="colmuns" class="col-span-4">
+        <UTable :rows="goods ? goods : []" :columns="colmuns" class="col-span-4">
             <template #price-data="{ row }">
                 <div class="text-right">{{ row.price }} 円</div>
             </template>
@@ -83,7 +86,7 @@ const buyItems = async () => {
                 <UButton variant="outline" @click="removeItem(row.key)">x</UButton>
             </template>
         </UTable>
-        <UForm :state="formState" class="space-y-4">
+        <UForm :state="formState" class="space-y-4 col-span-3">
             <div class="text-xl">総計: <span class="font-bold">{{ formState.grandTotal }}</span> 円</div>
             <div class="flex flex-rows gap-4">
                 <UButton type="submit" size="md" icon="i-heroicons-currency-yen" @click="buyItems()"
