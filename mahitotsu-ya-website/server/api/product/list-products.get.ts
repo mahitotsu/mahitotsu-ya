@@ -18,9 +18,9 @@ interface Product {
 
 export default defineEventHandler(async (event) => {
 
-    const requestParams = getQuery<RequestParams>(event);
+    const { category } = getQuery<RequestParams>(event);
 
     return fetchWebContent('/data/products.csv')
         .then(stream => streamToString(stream))
-        .then(data => data ? (parse(data, { columns: true }) as Product[]).filter(product => product.category == requestParams.category) : []);
+        .then(data => data ? (parse(data, { columns: true }) as Product[]).filter(product => product.category == category) : []);
 });

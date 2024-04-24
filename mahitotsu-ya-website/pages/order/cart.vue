@@ -4,7 +4,7 @@ import InfoMessageModal from '~/components/InfoMessageModal.vue';
 const modal = useModal();
 const sessionId = useState<number>('SessionId', () => Date.now());
 
-const { data: gifts } = await useFetch('/api/list-gifts', {
+const { data: gifts } = await useFetch('/api/product/list-gifts', {
     transform: (gifts) => {
         const giftMap = {} as {
             [key: string]: {
@@ -21,7 +21,7 @@ const { data: gifts } = await useFetch('/api/list-gifts', {
         return giftMap;
     }
 });
-const { data: items, refresh } = await useFetch('/api/list-items-in-cart', {
+const { data: items, refresh } = await useFetch('/api/shopping/list-items-in-cart', {
     query: { sessionId: sessionId.value },
     transform: (items) => items.map(item => {
         return {
@@ -48,7 +48,7 @@ const formState = computed(() => {
 });
 const hasItems = computed(() => items.value && items.value.length > 0);
 const removeItem = async (id?: string) => {
-    await $fetch('/api/remove-items-from-cart', {
+    await $fetch('/api/shopping/remove-items-from-cart', {
         method: 'POST',
         body: { sessionId: sessionId.value, id },
     }).then(changed => {
@@ -56,7 +56,7 @@ const removeItem = async (id?: string) => {
     });
 }
 const buyItems = async () => {
-    await $fetch('/api/order-cart-items', {
+    await $fetch('/api/order/order-cart-items', {
         method: 'POST',
     }).then(orderId => {
         modal.open(InfoMessageModal, {

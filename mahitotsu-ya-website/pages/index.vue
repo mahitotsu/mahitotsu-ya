@@ -11,7 +11,7 @@ const model = reactive<{
 const askQuestion = async (question?: string) => {
     model.processing = true;
     model.answer = '少々お待ちください ...';
-    model.answer = await $fetch('/api/ask-question', {
+    model.answer = await $fetch('/api/agent/ask-question', {
         method: 'POST',
         body: {
             sessionId: sessionId.value,

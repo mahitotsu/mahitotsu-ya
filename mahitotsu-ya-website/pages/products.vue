@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-const { data: categories } = await useFetch('/api/list-categories', {
+const { data: categories } = await useFetch('/api/product/list-categories', {
     transform: (categories) => categories.map(category => {
         return {
             label: category.name,
@@ -11,7 +11,7 @@ const { data: categories } = await useFetch('/api/list-categories', {
 const selectedIndex = useState<number>('SelectedCategoryIndex', () => 0);
 const selectedCategory = computed(() => categories.value ? categories.value[selectedIndex.value].label : undefined);
 
-const { data: products } = await useFetch('/api/list-products', {
+const { data: products } = await useFetch('/api/product/list-products', {
     query: { category: selectedCategory },
     transform: (products) => products.map(product => {
         return {

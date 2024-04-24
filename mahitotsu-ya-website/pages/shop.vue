@@ -8,7 +8,7 @@ import type { CartItem } from '~/utils/devStorage';
 const modal = useModal();
 const sessionId = useState<number>('SessionId', () => Date.now());
 
-const { data: gifts } = await useFetch('/api/list-gifts');
+const { data: gifts } = await useFetch('/api/product/list-gifts');
 const models = {} as {
     [key: string]: Record<string, any>,
 }
@@ -28,7 +28,7 @@ gifts.value?.forEach(gift => {
 
 const onSubmit = async (event: FormSubmitEvent<Schema>) => {
     const item = { ...event.data } as CartItem;
-    const hasStock = await $fetch('/api/inquire-gift-inventry', {
+    const hasStock = await $fetch('/api/shopping/inquire-gift-inventry', {
         query: { giftId: item.giftId },
     });
     if (!hasStock) {
@@ -36,7 +36,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
             messages: ['申し訳ございません。現在この商品は品切れとなっております。'],
         })
     } else {
-        await $fetch('/api/add-items-to-cart', {
+        await $fetch('/api/shopping/add-items-to-cart', {
             method: 'POST',
             body: { sessionId: sessionId.value, item },
         }).then((changed) => {

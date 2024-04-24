@@ -9,7 +9,7 @@ const model = reactive<{
 
 const modal = useModal();
 const inquireOrder = async (orderId?:string) => {
-    await $fetch('/api/describe-order', {
+    await $fetch('/api/order/describe-order', {
         query: { orderId },
     }).then(result => {
         const order = result.order;
