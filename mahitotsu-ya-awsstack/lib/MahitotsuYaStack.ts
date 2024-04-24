@@ -5,6 +5,7 @@ import { FunctionUrlAuthType, InvokeMode, Runtime } from "aws-cdk-lib/aws-lambda
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { BlockPublicAccess, Bucket } from "aws-cdk-lib/aws-s3";
 import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
+import { CfnInclude } from "aws-cdk-lib/cloudformation-include";
 import { Construct } from "constructs";
 
 export class MahitotsuYaStack extends Stack {
@@ -39,15 +40,21 @@ export class MahitotsuYaStack extends Stack {
             billingMode: BillingMode.PAY_PER_REQUEST,
         });
 
+        const agentTemplate = new CfnInclude(this, 'MahitotsuYaAgent', {
+            templateFile: `${__dirname}/BedrockAgent.yaml`,
+        });
+        const agent = agentTemplate.getResource('MahitotsuYaAgent');
+
         const webServer = new NodejsFunction(this, 'WebServer', {
             entry: `${__dirname}/../../mahitotsu-ya-website/.output/server/index.mjs`,
             runtime: Runtime.NODEJS_20_X,
             memorySize: 256,
             timeout: Duration.minutes(1),
             environment: {
-                'NUXT_CONTENTS_BUCKET_NAME': contentsBucket.bucketName,
-                'NUXT_CONTENTS_KEY_PREFIX': 'public',
-                'NUXT_SESSION_TABLE_NAME': sessionTable.tableName,
+                NUXT_CONTENTS_BUCKET_NAME: contentsBucket.bucketName,
+                NUXT_CONTENTS_KEY_PREFIX: 'public',
+                NUXT_SESSION_TABLE_NAME: sessionTable.tableName,
+                NUXT_AGENT_ID: agent.ref,
             },
         });
         contentsBucket.grantRead(webServer);

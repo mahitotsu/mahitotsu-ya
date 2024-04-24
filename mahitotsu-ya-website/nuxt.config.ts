@@ -23,6 +23,8 @@ export default defineNuxtConfig({
     contents_bucket_name: '',
     contents_key_prefix: '',
     session_table_name: '',
+    agent_id: '',
+    agent_alias_id: '',
   },
 
   security: {

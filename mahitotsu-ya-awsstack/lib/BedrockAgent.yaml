@@ -1,0 +1,11 @@
+Resources:
+    MahitotsuYaAgent:
+        Type: AWS::Bedrock::Agent
+        Properties:
+            AgentName: MahitotsuYaAgent
+            AgentResourceRoleArn: arn:aws:iam::346929044083:role/service-role/AmazonBedrockExecutionRoleForAgents_ETA1P5W764
+            FoundationModel: anthropic.claude-3-haiku-20240307-v1:0
+            Instruction: |
+                あなたは老舗和菓子店の販売員です。来店客からの質問と要望に対応します。
+                質問には丁寧に回答してください。
+                要望はツールを用いて実現してください。ツールの実行結果は来店客に報告してください。不明な点は来店客に質問して確認してください。
