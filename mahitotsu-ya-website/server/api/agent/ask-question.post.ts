@@ -1,6 +1,5 @@
 import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
 
-// const modelId = 'arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-v2:1:200k';
 const modelId = 'anthropic.claude-3-haiku-20240307-v1:0';
 const client = new BedrockRuntimeClient({
     region: 'us-east-1',
