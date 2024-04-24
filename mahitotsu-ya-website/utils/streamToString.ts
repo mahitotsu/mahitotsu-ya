@@ -1,11 +1,22 @@
-import { ReadStream } from 'fs';
+export const streamToString = async (stream?: ReadableStream) => {
+    if (!stream) {
+        return undefined;
+    }
 
-export const streamToString = (stream?: ReadStream) => {
-    return stream ? new Promise<string>((resolve, reject) => {
-        const chunks = [] as Buffer[];
-        stream.on('data', (data) => chunks.push(Buffer.from(data)));
-        stream.on('error', (err) => reject(err));
-        stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
-    }) :
-        undefined;
+    const reader = stream.getReader();
+    const chunks = [] as Buffer[];
+    try {
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+                break;
+            }
+            if (value) {
+                chunks.push(Buffer.from(value));
+            }
+        }
+    } finally {
+        reader.releaseLock();
+    }
+    return Buffer.concat(chunks).toString('utf-8');
 }

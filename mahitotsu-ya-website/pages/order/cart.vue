@@ -25,7 +25,7 @@ const { data: items, refresh } = await useFetch('/api/shopping/list-items-in-car
     query: { sessionId: sessionId.value },
     transform: (items) => items.map(item => {
         return {
-            id: item.id,
+            key: item.key,
             count: item.count,
             name: gifts.value![item.giftId].name,
             price: gifts.value![item.giftId].price,
@@ -47,10 +47,10 @@ const formState = computed(() => {
     }
 });
 const hasItems = computed(() => items.value && items.value.length > 0);
-const removeItem = async (id?: string) => {
+const removeItem = async (key?: string) => {
     await $fetch('/api/shopping/remove-items-from-cart', {
         method: 'POST',
-        body: { sessionId: sessionId.value, id },
+        body: { sessionId: sessionId.value, key },
     }).then(changed => {
         if (changed) refresh();
     });
@@ -80,7 +80,7 @@ const buyItems = async () => {
                 <div class="text-right">{{ row.total }} 円</div>
             </template>
             <template #delete-data="{ row }">
-                <UButton variant="outline" @click="removeItem(row.id)">x</UButton>
+                <UButton variant="outline" @click="removeItem(row.key)">x</UButton>
             </template>
         </UTable>
         <UForm :state="formState" class="space-y-4">

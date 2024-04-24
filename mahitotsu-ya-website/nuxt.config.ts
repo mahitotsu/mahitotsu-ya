@@ -5,11 +5,8 @@ export default defineNuxtConfig({
   ssr: true,
 
   nitro: {
-    preset: 'node-server',
+    preset: 'aws-lambda',
     serveStatic: false,
-  },
-  experimental: {
-    componentIslands: true,
   },
 
   modules: ["nuxt-security", "@nuxt/ui"],
@@ -20,6 +17,12 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/vnd.microsoft.icon', href: 'data:image/x-icon;base64,AA' }
       ]
     }
+  },
+
+  runtimeConfig: {
+    contents_bucket_name: '',
+    contents_key_prefix: '',
+    session_table_name: '',
   },
 
   security: {

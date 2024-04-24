@@ -11,8 +11,7 @@ const modal = useModal();
 const inquireOrder = async (orderId?:string) => {
     await $fetch('/api/order/describe-order', {
         query: { orderId },
-    }).then(result => {
-        const order = result.order;
+    }).then(order => {
         if (order) {
             modal.open(InfoMessageModal, {
                 messages: ['ご注文を承っております。']

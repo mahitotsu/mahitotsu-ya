@@ -18,8 +18,9 @@ const askQuestion = async (question?: string) => {
             question: question,
         }
     }).then(response => {
-        model.processing = false;
         return response;
+    }).finally(() => {
+        model.processing = false;
     });
 }
 

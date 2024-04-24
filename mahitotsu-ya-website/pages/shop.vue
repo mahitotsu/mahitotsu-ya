@@ -3,7 +3,7 @@ import type { FormErrorEvent, FormSubmitEvent } from '#ui/types';
 import { z } from 'zod';
 import ErrorMessageModal from '~/components/ErrorMessageModal.vue';
 import InfoMessageModal from '~/components/InfoMessageModal.vue';
-import type { CartItem } from '~/utils/devStorage';
+import type { CartItem } from '~/utils/sessionTableTypes';
 
 const modal = useModal();
 const sessionId = useState<number>('SessionId', () => Date.now());

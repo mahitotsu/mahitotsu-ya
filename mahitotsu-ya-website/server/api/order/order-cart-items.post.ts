@@ -1,18 +1,19 @@
-import { OrderDescription, devStorage } from "~/utils/devStorage";
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
+import type { OrderDescription } from '~/utils/sessionTableTypes';
 
-const orderTable = 'OrderTable';
+const sessionTableName = useRuntimeConfig().session_table_name;
+const docClient = DynamoDBDocumentClient.from(new DynamoDBClient());
+const type = 'Order';
+
 export default defineEventHandler(async event => {
+
     const id = `ORD-${Math.floor(Math.random() * 10000)}`;
-    const order = {
-        id,
-        orderedAt: Date.now(),
-    } as OrderDescription;
+    const item = { id, orderedAt: Date.now(), type } as OrderDescription;
 
-    let orders = devStorage.get<OrderDescription[]>(orderTable);
-    if (!orders) {
-        orders = [];
-    }
-
-    devStorage.set(orderTable, orders.concat(order));
-    return id;
+    const command = new PutCommand({
+        TableName: sessionTableName,
+        Item: item,
+    });
+    return await docClient.send(command).then(() => id);
 })

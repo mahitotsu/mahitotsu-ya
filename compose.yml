@@ -15,6 +15,10 @@ services:
     init: true
     volumes:
       - ./mahitotsu-ya-website/.output:/workdir:ro
+      - $HOME/.aws:/root/.aws:ro
+    environment:
+      - NUXT_CONTENTS_BUCKET_NAME=mahitotsuyastack-contentsbucket571b0902-qaeh4b9lrhtf
+      - NUXT_CONTENTS_KEY_PREFIX=
     ports:
       - 3000:3000
     entrypoint: ['node']

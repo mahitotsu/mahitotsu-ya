@@ -1,20 +1,13 @@
 <script setup lang="ts">
-import markdownIt from 'markdown-it';
 const props = defineProps<{
     path: string;
 }>();
-const md = markdownIt();
-const { data: html, pending } = useAsyncData(() =>
-    fetchWebContent(['/contents', props.path, '.md'].join(''))
-        .then(stream => streamToString(stream))
-        .then(src => md.render(src ? src : '')), {
-    lazy: true,
-});
+const { data: html } = useAsyncData(() =>
+    $fetch(['/contents', props.path, '.md'].join('')), );
 </script>
 
 <template>
-    <span v-if="pending">Loading ...</span>
-    <span v-else v-html="html"></span>
+    <span v-html="html"></span>
 </template>
 
 <style scoped>
@@ -31,7 +24,7 @@ const { data: html, pending } = useAsyncData(() =>
 }
 
 ::v-deep(h6) {
-    @apply pb-1 pt-1 text-sm 
+    @apply pb-1 pt-1 text-sm
 }
 
 ::v-deep(h4) {
