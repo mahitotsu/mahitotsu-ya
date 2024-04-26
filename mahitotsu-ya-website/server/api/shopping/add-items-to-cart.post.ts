@@ -31,7 +31,7 @@ export default defineEventHandler(async event => {
             TableName: sessionTableName,
             Item: cart,
         });
-        return docClient.send(insertCommand).then(result => true);
+        return await docClient.send(insertCommand).then(result => true);
     } else {
         const updateCommand = new UpdateCommand({
             TableName: sessionTableName,

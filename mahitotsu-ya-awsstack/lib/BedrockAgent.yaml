@@ -3,6 +3,8 @@ Parameters:
         Type: String
     AgentRoleArn:
         Type: String
+    KnowledgeBaseId:
+        Type: String
 Resources:
     MahitotsuYaAgent:
         Type: AWS::Bedrock::Agent
@@ -16,6 +18,10 @@ Resources:
                 要望はツールを用いて実現してください。ツールの実行結果は来店客に報告してください。不明な点は来店客に質問して確認してください。
             AutoPrepare: true
             SkipResourceInUseCheckOnDelete: true
+            KnowledgeBases:
+                - KnowledgeBaseId: !Ref KnowledgeBaseId
+                  KnowledgeBaseState: ENABLED
+                  Description: 店舗に固有の情報が蓄積された知識ベースです。``
             ActionGroups:
                 - ActionGroupName: UserInputAction
                   ActionGroupState: ENABLED

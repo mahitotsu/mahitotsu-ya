@@ -1,6 +1,5 @@
 import { BedrockAgentRuntimeClient, InvokeAgentCommand } from '@aws-sdk/client-bedrock-agent-runtime';
 
-const modelId = 'anthropic.claude-3-haiku-20240307-v1:0';
 const client = new BedrockAgentRuntimeClient({
     region: 'us-east-1',
 });

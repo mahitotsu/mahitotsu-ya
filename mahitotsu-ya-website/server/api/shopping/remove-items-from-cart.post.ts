@@ -11,7 +11,7 @@ const docClient = DynamoDBDocumentClient.from(new DynamoDBClient());
 const type = 'Cart';
 
 export default defineEventHandler(async event => {
-    const { sessionId, key } = await readBody<RequestParams>(event, { strict: false });
+    const { sessionId, key } = await readBody<RequestParams>(event);
 
     if (key) {
         const removeCommand = new UpdateCommand({
