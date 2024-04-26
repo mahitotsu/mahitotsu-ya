@@ -30,6 +30,7 @@ const clearQuestion = async () => {
 
 const clearAnswer = async () => {
     model.answer = undefined;
+    model.processing = false;
 }
 
 </script>

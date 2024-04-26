@@ -13,6 +13,9 @@ const type = 'Cart';
 
 export default defineEventHandler(async event => {
     const { sessionId, item } = await readBody<RequestParams>(event);
+    if (Math.random() < 0.3) {
+        return false; // specified gift is not available now...
+    }
 
     const getCommand = new GetCommand({
         TableName: sessionTableName,

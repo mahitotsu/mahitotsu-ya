@@ -1,6 +1,6 @@
 import { CfnOutput, DockerImage, Duration, RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
 import { AttributeType, BillingMode, Table } from "aws-cdk-lib/aws-dynamodb";
-import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
+import { Effect, PolicyStatement, Role } from "aws-cdk-lib/aws-iam";
 import { FunctionUrlAuthType, InvokeMode, Runtime } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { BlockPublicAccess, Bucket } from "aws-cdk-lib/aws-s3";
@@ -40,10 +40,19 @@ export class MahitotsuYaStack extends Stack {
             billingMode: BillingMode.PAY_PER_REQUEST,
         });
 
+        const knowledgeBaseRole = Role.fromRoleArn(this, 'KnowledgeBaseRole',
+            'arn:aws:iam::346929044083:role/service-role/AmazonBedrockExecutionRoleForKnowledgeBase_ytvpk');
+        const agentRole = Role.fromRoleArn(this, 'AgentRole',
+            'arn:aws:iam::346929044083:role/service-role/AmazonBedrockExecutionRoleForAgents_ETA1P5W764');
         const agentTemplate = new CfnInclude(this, 'MahitotsuYaAgent', {
             templateFile: `${__dirname}/BedrockAgent.yaml`,
+            parameters: {
+                KnowledgeBaseRole: knowledgeBaseRole.roleArn,
+                AgentRoleArn: agentRole.roleArn,
+            }
         });
         const agent = agentTemplate.getResource('MahitotsuYaAgent');
+        const agentAlias = agentTemplate.getResource('MahitotsuYaAgentAlias');
 
         const webServer = new NodejsFunction(this, 'WebServer', {
             entry: `${__dirname}/../../mahitotsu-ya-website/.output/server/index.mjs`,
@@ -55,14 +64,15 @@ export class MahitotsuYaStack extends Stack {
                 NUXT_CONTENTS_KEY_PREFIX: 'public',
                 NUXT_SESSION_TABLE_NAME: sessionTable.tableName,
                 NUXT_AGENT_ID: agent.ref,
+                NUXT_AGENT_ALIAS_ID: agentAlias.getAtt('AgentAliasId').toString(),
             },
         });
         contentsBucket.grantRead(webServer);
         sessionTable.grantReadWriteData(webServer);
         webServer.role!.addToPrincipalPolicy(new PolicyStatement({
             effect: Effect.ALLOW,
-            actions: ['bedrock:InvokeModel'],
-            resources: ['arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-haiku-20240307-v1:0'],
+            actions: ['bedrock:InvokeAgent'],
+            resources: [agentAlias.getAtt('AgentAliasArn').toString()],
         }));
 
         const websiteUrl = webServer.addFunctionUrl({

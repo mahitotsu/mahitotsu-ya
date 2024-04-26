@@ -1,7 +1,7 @@
-import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
+import { BedrockAgentRuntimeClient, InvokeAgentCommand } from '@aws-sdk/client-bedrock-agent-runtime';
 
 const modelId = 'anthropic.claude-3-haiku-20240307-v1:0';
-const client = new BedrockRuntimeClient({
+const client = new BedrockAgentRuntimeClient({
     region: 'us-east-1',
 });
 
@@ -10,33 +10,41 @@ interface RequestParams {
     question: string;
 }
 
-export default defineEventHandler(async (event): Promise<string> => {
+const runtimeConfig = useRuntimeConfig();
+const agentId = runtimeConfig.agent_id;
+const agentAliasId = runtimeConfig.agent_alias_id;
+
+export default defineEventHandler(async (event): Promise<string | undefined> => {
 
     const { sessionId, question } = await readBody<RequestParams>(event);
-    const command = new InvokeModelCommand({
-        modelId,
-        contentType: 'application/json',
-        accept: 'application/json',
-        body: JSON.stringify({
-            anthropic_version: 'bedrock-2023-05-31',
-            max_tokens: 500,
-            messages: [{
-                role: 'user',
-                content: [{
-                    'type': 'text',
-                    'text': `Human: あなたは店舗の店頭スタッフです。来店客からの質問または要望に答えてください。
-                            <question>
-                            ${question}
-                            </question>
-
-                            Assistant:
-                            `,
-                }]
-            }],
-        }),
+    const command = new InvokeAgentCommand({
+        agentId,
+        agentAliasId,
+        sessionId,
+        endSession: false,
+        enableTrace: false,
+        inputText: question,
+        sessionState: {
+            promptSessionAttributes: {
+                timeZone: 'JST',
+                locale: 'ja_JP'
+            }
+        }
     });
 
-    return await client.send(command).then(response => {
-        return JSON.parse(response.body.transformToString())['content'][0]['text'];
+    return await client.send(command).then(async response => {
+        if (!response.completion) {
+            return undefined;
+        }
+
+        const decorder = new TextDecoder('utf-8');
+        const answer = [] as string[];
+        for await (const stream of response.completion) {
+            if (stream.chunk && stream.chunk.bytes) {
+                const chunk = decorder.decode(stream.chunk.bytes)
+                answer.push(chunk);
+            }
+        }
+        return answer.join('');
     });
 })
