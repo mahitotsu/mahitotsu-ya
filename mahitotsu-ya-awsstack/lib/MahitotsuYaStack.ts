@@ -1,6 +1,6 @@
 import { CfnOutput, DockerImage, Duration, RemovalPolicy, ScopedAws, Stack, StackProps } from "aws-cdk-lib";
 import { AttributeType, BillingMode, Table } from "aws-cdk-lib/aws-dynamodb";
-import { Effect, PolicyStatement, Role } from "aws-cdk-lib/aws-iam";
+import { Effect, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import { FunctionUrlAuthType, InvokeMode, Runtime } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { BlockPublicAccess, Bucket } from "aws-cdk-lib/aws-s3";
@@ -88,16 +88,20 @@ export class MahitotsuYaStack extends Stack {
             invokeMode: InvokeMode.BUFFERED,
         });
 
-        const agentAction = new NodejsFunction(this, 'AgentAction', {
-            entry: `${__dirname}/AgentToApiFunction.ts`,
+        const agentAction = new NodejsFunction(this, 'AddItemToCartApi', {
+            entry: `${__dirname}/AddItemToCartApi.ts`,
             runtime: Runtime.NODEJS_20_X,
             memorySize: 128,
             timeout: Duration.minutes(1),
             environment: {
-                API_BASE_URL: `${websiteUrl.url}`,
+                API_BASE_URL: websiteUrl.url,
             }
         });
         agentAction.grantInvoke(agentRole);
+        agentAction.addPermission('AgentPermission', {
+            principal: new ServicePrincipal('bedrock.amazonaws.com'),
+            action: 'lambda:InvokeFunction',
+        });
 
         new CfnOutput(this, 'WebsiteUrl', { value: websiteUrl.url });
     }

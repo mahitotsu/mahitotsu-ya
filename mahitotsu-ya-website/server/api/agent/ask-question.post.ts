@@ -23,12 +23,6 @@ export default defineEventHandler(async (event): Promise<string | undefined> => 
         endSession: false,
         enableTrace: false,
         inputText: question,
-        sessionState: {
-            promptSessionAttributes: {
-                timeZone: 'JST',
-                locale: 'ja_JP'
-            }
-        }
     });
 
     return await client.send(command).then(async response => {
