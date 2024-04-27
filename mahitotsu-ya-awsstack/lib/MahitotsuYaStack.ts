@@ -39,6 +39,7 @@ export class MahitotsuYaStack extends Stack {
             partitionKey: { name: 'id', type: AttributeType.STRING },
             sortKey: { name: 'type', type: AttributeType.STRING },
             billingMode: BillingMode.PAY_PER_REQUEST,
+            removalPolicy: RemovalPolicy.DESTROY,
         });
 
         const knowledgeBaseRole = Role.fromRoleArn(this, 'KnowledgeBaseRole',

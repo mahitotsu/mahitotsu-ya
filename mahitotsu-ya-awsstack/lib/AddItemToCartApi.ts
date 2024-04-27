@@ -14,7 +14,6 @@ const toMap = (kvArray: {
 const baseUrl = process.env.API_BASE_URL;
 export const handler: Handler = async (event, context) => {
 
-    console.log(event);
     const params = toMap(event.parameters);
     const requestBody = {
         sessionId: event.sessionId,
@@ -32,24 +31,22 @@ export const handler: Handler = async (event, context) => {
         body: JSON.stringify(requestBody),
     }).then(res => res.text());
 
-    console.log(responseBody);
     const response = {
         messageVersion: '1.0',
-        actionGroup: event['actionGroup'],
-        // apiPath: event['apiPath'],
-        // httpMethod: event['httpMethod'],
-        // httpStatusCode: 200,
         response: {
             actionGroup: event['actionGroup'],
+            apiPath: event['apiPath'],
+            httpMethod: event['httpMethod'],
+            httpStatusCode: 200,
             responseBody: {
                 'application/json': {
                     body: responseBody,
                 }
-            }
+            },
         },
         sessionAttributes: event['sessionAttributes'],
         promptSessionAttributes: event['promptSessionAttributes']
     };
-    console.log(response);
-    return response;
+
+    return response
 }
